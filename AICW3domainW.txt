@@ -1,0 +1,132 @@
+(define(domain robotdomain)
+(:requirements :typing)
+
+;; there exists a total of 4 objects within this domain 
+
+(:types keys car robot package location)
+
+
+(:predicates
+    ;;robot
+    (at ?l - location ?r - robot)
+    (has_keys ?k - keys ?r - robot)
+    ;;key location
+    (key_location ?l - location ?k - keys)
+    ;;package location
+    (package_location ?l - location ?p - package)
+    ;;package
+    (has_package ?p - package ?r - robot)
+    (in_car ?c - car ?r - robot)
+    ;;location based predicates 
+    (neighbor_location ?l ?l2 - location)
+    ;; car properties 
+    (car_location ?l - location ?c - car)
+    (package_in_car ?c - car ?p - package)
+)
+
+;;actions 
+;;walking robot
+(:action walk
+    :parameters(?r - robot ?l - location ?l2 - location ?c - car ?k - keys ?p - package)
+    :precondition(and(at ?l ?r)(not(in_car ?c ?r))(neighbor_location ?l ?l2)(not(has_keys ?k ?r))(not(has_package ?p ?r)))
+    :effect(and(not(at ?l ?r))(at ?l2 ?r))
+    )
+    
+(:action walk_with_keys
+    :parameters(?r - robot ?l - location ?l2 - location ?c - car ?k - keys ?p - package)
+    :precondition(and(at ?l ?r)(not(in_car ?c ?r))(neighbor_location ?l ?l2)(has_keys ?k ?r)(not(has_package ?p ?r)))
+    :effect(and(not(at ?l ?r))(at ?l2 ?r)(not(key_location ?l ?k))(key_location ?l2 ?k))
+    )
+    
+;;getting the keys for the car
+(:action collect_keys
+    :parameters(?r - robot ?l - location ?k - keys ?c - car)
+    :precondition(and (not(in_car ?c ?r))(not(has_keys ?k ?r))(key_location ?l ?k)(at ?l ?r))
+    :effect(and(has_keys ?k ?r))
+    )
+    
+;;getting the car
+(:action collect_car
+    :parameters(?r - robot ?l - location ?k - keys ?c - car)
+    :precondition(and(not(in_car ?c ?r))(has_keys ?k ?r)(car_location ?l ?c)(at ?l ?r))
+    :effect(and(in_car ?c ?r))
+    )
+    
+
+    
+;; getting out of the car 
+(:action out_car
+    :parameters(?r - robot ?l - location ?c - car ?p - package) 
+    :precondition(and(in_car ?c ?r)(car_location ?l ?c))
+    :effect(and(not(in_car ?c ?r)))
+    )
+    
+;;getting the package
+(:action pickup_package
+    :parameters(?r - robot ?l - location ?p - package ?c - car)
+    :precondition(and (not(has_package ?p ?r))(package_location ?l ?p)(at ?l ?r)(not(in_car ?c ?r)))
+    :effect(and(has_package ?p ?r))
+    )
+    
+    
+;;dropping the package
+(:action drop_package
+    :parameters(?r - robot ?l - location ?c - car ?p - package)
+    :precondition(and(not(in_car ?c ?r))(has_package ?p ?r)(at ?l ?r))
+    :effect(and(not(has_package ?p ?r)))
+    )
+    
+;;dropping the keys 
+(:action drop_keys
+    :parameters(?r - robot ?l - location ?c - car ?k - keys)
+    :precondition(and(not(in_car ?c ?r))(has_keys ?k ?r)(at ?l ?r))
+    :effect(and(not(has_keys ?k ?r)))
+    )
+    
+    
+;;loading package into the car 
+(:action load_package
+    :parameters(?p - package ?r - robot ?c - car ?l - location) 
+    :precondition(and(not(in_car ?c ?r))(has_package ?p ?r)(at ?l ?r)(car_location ?l ?c))
+    :effect(and(not(has_package ?p ?r))(package_in_car ?c ?p))
+    )
+    
+;;unloading package from car 
+(:action unload_package
+    :parameters(?p - package ?r - robot ?c - car ?l - location) 
+    :precondition(and(not(in_car ?c ?r))(package_in_car ?c ?p)(not(has_package ?p ?r))(at ?l ?r)(car_location ?l ?c))
+    :effect(and(has_package ?p ?r)(not(package_in_car ?c ?p)))
+    )
+    
+    
+;;driving the car 
+(:action drive
+    :parameters(?r - robot ?c - car ?l - location ?l2 - location ?k - keys ?p - package)
+    :precondition(and(in_car ?c ?r)(neighbor_location ?l ?l2)(car_location ?l ?c)(not(has_package ?p ?r))(not(package_in_car ?c ?p)))
+    :effect(and(not(at ?l ?r))(at ?l2 ?r)(not(car_location ?l ?c))(car_location ?l2 ?c)(not(key_location ?l ?k))(key_location ?l2 ?k))
+)
+
+;; driving with package 
+(:action drive_with_package
+    :parameters(?r - robot ?c - car ?l - location ?l2 - location ?k - keys ?p - package)
+    :precondition(and(in_car ?c ?r)(neighbor_location ?l ?l2)(car_location ?l ?c)(not(has_package ?p ?r))(package_in_car ?c ?p))
+    :effect(and(not(at ?l ?r))(at ?l2 ?r)(not(car_location ?l ?c))(car_location ?l2 ?c)(not(key_location ?l ?k))(key_location ?l2 ?k)(not(package_location ?l ?p))(package_location ?l2 ?p))
+)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

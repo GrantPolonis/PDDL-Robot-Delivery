@@ -1,0 +1,43 @@
+(define (problem robot_problem)
+(:requirements :typing)
+(:domain robotdomain)
+
+(:objects 
+    G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 - location
+    c - car
+    r - robot
+    k - keys
+    p - package 
+)
+(:init
+    (at G1 r)
+    (car_location G3 c)
+    (key_location G4 k)
+    (package_location G6 p)
+    (neighbor_location G1 G2)
+    (neighbor_location G2 G1)
+    (neighbor_location G2 G4)
+    (neighbor_location G2 G3)
+    (neighbor_location G4 G2)
+    (neighbor_location G3 G2)
+    (neighbor_location G2 G5)
+    (neighbor_location G5 G2)
+    (neighbor_location G5 G6)
+    (neighbor_location G6 G5)
+    (neighbor_location G5 G7)
+    (neighbor_location G7 G5)
+    (neighbor_location G7 G8)
+    (neighbor_location G8 G7)
+    (neighbor_location G7 G9)
+    (neighbor_location G9 G7)
+    (neighbor_location G9 G10)
+    (neighbor_location G10 G9)
+)
+    
+(:goal (and
+       (at G1 r)
+       (key_location G4 k)
+       (car_location G2 c)
+       (package_location G10 p)
+    )))
+
